@@ -1,5 +1,6 @@
 package com.example.herenow
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,6 +15,8 @@ import com.example.herenow.data.SessionsByDateRepository
 import com.example.herenow.data.TodayNowResult
 import com.example.herenow.data.local.TokenManager
 import com.example.herenow.databinding.FragmentHomeBinding
+import com.example.herenow.notify.NotificationHelper
+import com.example.herenow.notify.ReminderScheduler
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -81,6 +84,9 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         profileRepo = ProfileRepository(requireContext())
         sessionsRepo = SessionsByDateRepository(requireContext())
+
+        // Pastikan channel notifikasi siap
+        NotificationHelper.ensureChannel(requireContext())
 
         loadAndSetUserName()
         refreshNowCardFromApi()
@@ -150,6 +156,17 @@ class HomeFragment : Fragment() {
                     val start = parseLocalTimeFlexible(s.shiftStart)
                     val end   = parseLocalTimeFlexible(s.shiftEnd)
                     val now   = LocalTime.now()
+
+                    ReminderScheduler.schedule15mBefore(
+                        context = requireContext(),
+                        classId = s.classId,
+                        sessionNumber = s.sessionNumber,
+                        title = s.courseName,
+                        room = s.roomId,
+                        startDate = dateLd,
+                        startTime = start
+                    )
+
                     val inWindow = if (start != null && end != null) {
                         val windowStart = start.minusMinutes(MINUTES_BEFORE_START.toLong())
                         !now.isBefore(windowStart) && now.isBefore(end)
@@ -184,13 +201,30 @@ class HomeFragment : Fragment() {
                     }
                     binding.tvDateAndDuration.text = "$prettyDate\n$timeStr"
 
-                    // Status tombol (selaras DetailFragment)
+                    // 1) Cek apakah sesi SUDAH MULAI
+                    val hasStarted = start?.let { !now.isBefore(it) } ?: false
+
+                    // 2) Jika BELUM mulai → sembunyikan tombol Attendance dan selesai
+                    if (!hasStarted) {
+                        setCheckSessionUI {
+                            // buka detail tanpa auto start attendance
+                            goToDetail(
+                                classId = s.classId,
+                                room = s.roomId,
+                                sessionNumber = s.sessionNumber
+                            )
+                        }
+                        return@launch
+                    }
+
+
+                    // 3) Jika SUDAH mulai → barulah tentukan status tombol
                     val presence = safelyLoadPresenceSnapshot(s.classId, s.sessionNumber)
                     when {
                         presence.isVerified -> setAttendedUI()
                         presence.isInCorrectLocation && presence.isCorrectFace -> setWaitingVerificationUI()
                         else -> setAttendActionUI {
-                            goToDetail(classId = s.classId, room = s.roomId)
+                            goToDetail(classId = s.classId, room = s.roomId, sessionNumber = s.sessionNumber)
                         }
                     }
                 }
@@ -270,19 +304,18 @@ class HomeFragment : Fragment() {
     }
 
     // ---------- Navigation ----------
-    private fun goToDetail(classId: Int, room: String?) {
+    private fun goToDetail(classId: Int, room: String?, sessionNumber: Int) {
         val detail = DetailFragment.newInstance(
             classId = classId,
             room = room ?: "-",
-            code = "-",              // fallback; akan diisi ulang dari API
-            title = "-",             // fallback
-            type = "LEC",            // fallback
-            instructor = "-",        // fallback
+            code = "-",
+            title = "-",
+            type = "LEC",
+            instructor = "-",
             creditsText = "0 Credits",
             totalSessions = 1,
-            selectedSession = -1     // AUTO_PICK di DetailFragment
+            selectedSession = sessionNumber // <— kirim eksplisit sesi yang diklik
         ).apply {
-            // Minta Detail otomatis mulai alur presensi
             arguments?.putBoolean("autoStartAttendance", true)
         }
 
@@ -311,6 +344,22 @@ class HomeFragment : Fragment() {
             .build()
         return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
             runCatching { client.newCall(req).execute().use { it.isSuccessful } }.getOrDefault(false)
+        }
+    }
+
+    private fun hideAttendanceButton() {
+        binding.btnAttendance.visibility = View.GONE
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setCheckSessionUI(onClick: () -> Unit) {
+        binding.btnAttendance.apply {
+            visibility = View.VISIBLE
+            isEnabled = true
+            text = "Check Session"
+            backgroundTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.yellow_orange)
+            setOnClickListener { onClick() }
         }
     }
 
