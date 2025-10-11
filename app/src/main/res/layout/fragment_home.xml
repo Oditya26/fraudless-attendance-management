@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!-- Profile Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="start|center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/white_circle"
+                android:contentDescription="@string/name_prototype"
+                android:src="@drawable/profile" />
+
+            <TextView
+                android:id="@+id/txtName"
+                style="@style/TitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name_prototype"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                style="?android:attr/progressBarStyleLarge"
+                android:indeterminate="true"
+                android:layout_marginTop="16dp" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animationEmpty"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/anim" />
+
+            <TextView
+                style="@style/DescriptionBoldTextStyle"
+                android:id="@+id/txtEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/no_activity_found"
+                android:textColor="@color/grey"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutHomeScheduleSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:backgroundTint="@color/rich_electric_blue"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card_2"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Label Class Code -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_teacher"
+                        android:tint="@color/rich_electric_blue"
+                        tools:ignore="UseAppTint" />
+
+                    <TextView
+                        style="@style/DescriptionBoldTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/class_code"
+                        android:textColor="@color/rich_electric_blue" />
+                </LinearLayout>
+
+                <!-- Isi Class Code -->
+                <TextView
+                    android:id="@+id/tvClassCode"
+                    style="@style/DescriptionRegularTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/class_code_value"
+                    android:textColor="@color/black" />
+
+                <!-- Garis pemisah -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/black" />
+
+                <!-- Label Room Code -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_building"
+                        android:tint="@color/rich_electric_blue"
+                        tools:ignore="UseAppTint" />
+
+                    <TextView
+                        style="@style/DescriptionBoldTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/room_code"
+                        android:textColor="@color/rich_electric_blue" />
+                </LinearLayout>
+
+                <!-- Isi Room Code -->
+                <TextView
+                    android:id="@+id/tvRoomCode"
+                    style="@style/DescriptionRegularTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/room_code_value"
+                    android:textColor="@color/black" />
+
+                <!-- Garis pemisah -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/black" />
+
+                <!-- Label Course Name -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_book"
+                        android:tint="@color/rich_electric_blue"
+                        tools:ignore="UseAppTint" />
+
+                    <TextView
+                        style="@style/DescriptionBoldTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/course_name"
+                        android:textColor="@color/rich_electric_blue" />
+                </LinearLayout>
+
+                <!-- Isi Course Name -->
+
+                <!-- Garis pemisah -->
+                <TextView
+                    android:id="@+id/tvCourseName"
+                    style="@style/DescriptionRegularTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/course_name_value"
+                    android:textColor="@color/black" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/black" />
+
+                <!-- Label Course Category -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_course_category"
+                        android:tint="@color/rich_electric_blue"
+                        tools:ignore="UseAppTint" />
+
+                    <TextView
+                        style="@style/DescriptionBoldTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/course_category"
+                        android:textColor="@color/rich_electric_blue" />
+                </LinearLayout>
+
+                <!-- Isi Course Category -->
+                <TextView
+                    android:id="@+id/tvCourseCategory"
+                    style="@style/DescriptionRegularTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/course_category_value"
+                    android:textColor="@color/black" />
+
+                <!-- Garis pemisah -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/black" />
+
+                <!-- Label Session -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_sks"
+                        android:tint="@color/rich_electric_blue"
+                        tools:ignore="UseAppTint" />
+
+                    <TextView
+                        style="@style/DescriptionBoldTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/session"
+                        android:textColor="@color/rich_electric_blue" />
+                </LinearLayout>
+
+                <!-- Isi Session -->
+                <TextView
+                    android:id="@+id/tvSession"
+                    style="@style/DescriptionRegularTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/session_number"
+                    android:textColor="@color/black" />
+
+                <!-- Garis pemisah -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/black" />
+
+                <!-- Label Date and Duration -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_time"
+                        android:tint="@color/rich_electric_blue"
+                        tools:ignore="UseAppTint" />
+
+                    <TextView
+                        style="@style/DescriptionBoldTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/date_and_duration"
+                        android:textColor="@color/rich_electric_blue" />
+                </LinearLayout>
+
+                <!-- Isi Date and Duration -->
+                <TextView
+                    android:id="@+id/tvDateAndDuration"
+                    style="@style/DescriptionRegularTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/date_and_duration_value"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+            <!-- Attendance Button -->
+            <Button
+                android:id="@+id/btnAttendance"
+                style="@style/DescriptionBoldTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_button"
+                android:backgroundTint="@color/yellow_orange"
+                android:padding="12dp"
+                android:text="@string/attendance"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

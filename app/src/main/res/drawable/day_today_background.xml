@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Jika today dipilih -->
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/yellow_orange"/>
+            <size android:width="40dp" android:height="40dp"/>
+        </shape>
+    </item>
+
+    <!-- Default today (outline kuning) -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@android:color/transparent"/>
+            <stroke
+                android:width="2dp"
+                android:color="@color/yellow_orange"/>
+            <size android:width="40dp" android:height="40dp"/>
+        </shape>
+    </item>
+</selector>

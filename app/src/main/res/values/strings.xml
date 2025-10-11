@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">HereNow</string>
+
+    <string name="hello">hello</string>
+    <string name="tanda_seru">!</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+
+    <string name="profile_page">profile page</string>
+    <string name="home_page">home page</string>
+    <string name="schedule_page">schedule page</string>
+    <string name="enrollment_page">enrollment page</string>
+
+    <string name="email_prototype">johndoe@gmail.com</string>
+    <string name="nim_prototype">260123xxxx</string>
+    <string name="name_prototype">John Doe</string>
+
+    <string name="attendance">Attendance</string>
+    <string name="class_code">Class Code</string>
+    <string name="class_code_value">LA20</string>
+    <string name="room_code">Room Code</string>
+    <string name="room_code_value">0205</string>
+    <string name="course_name">Course Name</string>
+    <string name="course_name_value">CHAR6030002 - Character Building : Pancasila</string>
+    <string name="course_category">Course Category</string>
+    <string name="course_category_value">LEC</string>
+    <string name="date_and_duration">Date and Duration</string>
+    <string name="date_and_duration_value">June, 16th 2025 07:20 – 09:00</string>
+
+    <string name="sun">Sun</string>
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thu">Thu</string>
+    <string name="fri">Fri</string>
+    <string name="sat">Sat</string>
+
+    <string name="bulan_tahun">Month, Year</string>
+
+    <string name="date">June, 16th 2025</string>
+    <string name="time">07.20 -09.00 WIB</string>
+
+    <string name="more_detail">More Detail</string>
+
+    <string name="session">Session</string>
+    <string name="session_number">7</string>
+
+    <string name="course_code_prototype">CHAR6030002</string>
+    <string name="course_name_prototype">Character Building: Pancasila</string>
+
+    <string name="semester_prototype">Even Semester, 2025</string>
+
+    <string name="credit">Credits</string>
+    <string name="credit_number">2</string>
+
+    <string name="no_activity_found">No Activity Found</string>
+
+    <string name="attended">Attended</string>
+    <string name="not_attended">Not Attended</string>
+
+    <string name="loading">Loading…</string>
+    <string name="no_data">No Data</string>
+</resources>

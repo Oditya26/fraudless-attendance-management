@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="rich_electric_blue">#0097DA</color>
+    <color name="ateneo_blue">#014769</color>
+    <color name="white">#FFFFFF</color>
+    <color name="grey">#8C8C8C</color>
+    <color name="black">#000000</color>
+    <color name="yellow_orange">#F8B133</color>
+    <color name="white_semi_transparant">#20FFFFFF</color>
+</resources>

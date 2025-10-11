@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:layout_margin="4dp"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:clipToPadding="false">
+
+    <!-- LAPIS ATAS -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_gravity="center_horizontal">
+
+        <!-- OUTLINE HARI INI (kecil & biru ateneo) -->
+        <View
+            android:id="@+id/todayOutline"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:background="@drawable/day_today_outline"
+            android:visibility="gone" />
+
+        <!-- BG seleksi (solid) -->
+        <View
+            android:id="@+id/selectionBg"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:background="@drawable/day_selected_bg"
+            android:visibility="gone" />
+
+        <!-- Angka tanggal -->
+        <TextView
+            android:id="@+id/txtDay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/day_text_color" />
+    </FrameLayout>
+
+    <!-- LAPIS BAWAH: DOT -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_gravity="center_horizontal">
+        <View
+            android:id="@+id/eventDot"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="center"
+            android:background="@drawable/event_dot"
+            android:visibility="gone" />
+    </FrameLayout>
+
+
+</LinearLayout>

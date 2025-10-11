@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="1080">
+
+    <path
+        android:fillColor="@color/ateneo_blue"
+        android:pathData="M577.6,111.8a55.3,55.3 0,0 0,-75.3 0l-387.7,360a55.3,55.3 0,0 0,37.5 95.9h27.7V872.2A110.9,110.9 0,0 0,290.7 983H789.1A110.9,110.9 0,0 0,899.9 872.2V567.7h27.7a55.3,55.3 0,0 0,37.7 -95.9ZM512.2,650.7H567.6a83.1,83.1 0,0 1,83.1 83.1V899.9H429.1V733.8A83.1,83.1 0,0 1,512.2 650.7Z" />
+
+</vector>

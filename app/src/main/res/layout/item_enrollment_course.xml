@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_card_2"
+    android:layout_marginBottom="12dp">
+
+    <!-- Class Code -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_teacher"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtRoomCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/class_code_value"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+    <!-- Course code -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_book"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtCourseCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/course_code_prototype"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+    <!-- Course title -->
+    <TextView
+        android:id="@+id/txtCourseTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/course_name"
+        android:textColor="@color/black"
+        android:layout_marginStart="26dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Class type -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_course_category"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtClassType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/course_category_value"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+    <!-- Credits -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_sks"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtCredits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/credit"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+    <!-- Instructor -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_job"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtInstructor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name_prototype"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+</LinearLayout>

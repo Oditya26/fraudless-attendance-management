@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="spinner_dropdown_width">300dp</dimen>
+    <dimen name="dropdown_max_height">300dp</dimen>
+    <dimen name="session_spacing">1dp</dimen>
+    <dimen name="session_edge_spacing">1dp</dimen>
+</resources>
