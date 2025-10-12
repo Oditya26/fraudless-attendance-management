@@ -517,7 +517,33 @@ class DetailFragment : Fragment() {
         sessionSnapHelper?.attachToRecyclerView(null)
         binding.rvSessions.onFlingListener = null
         sessionSnapHelper = LinearSnapHelper().also { it.attachToRecyclerView(binding.rvSessions) }
+        centerOnSelectedSession()
     }
+
+    private fun centerOnSelectedSession() {
+        val rv = binding.rvSessions
+        val lm = rv.layoutManager as? LinearLayoutManager ?: return
+        val index = (selectedSession - 1).coerceAtLeast(0)
+
+        // Pastikan ukuran & layout sudah jadi dulu
+        rv.post {
+            // Bikin item terlihat dulu
+            lm.scrollToPositionWithOffset(index, 0)
+
+            // Lalu gunakan SnapHelper biar item-nya ke-snap di tengah
+            rv.post {
+                val snap = sessionSnapHelper ?: return@post
+                val snapView = snap.findSnapView(lm) ?: run {
+                    // Kalau belum ada view tersnap, arahkan smooth ke index dulu
+                    rv.smoothScrollToPosition(index)
+                    return@post
+                }
+                val dist = snap.calculateDistanceToFinalSnap(lm, snapView)
+                if (dist != null) rv.smoothScrollBy(dist[0], dist[1])
+            }
+        }
+    }
+
 
     // ========= Auto-pick sesi =========
     @RequiresApi(Build.VERSION_CODES.O)

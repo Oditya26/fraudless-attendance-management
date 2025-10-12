@@ -72,4 +72,5 @@ dependencies {
 
     implementation (libs.zxing.android.embedded)
     implementation (libs.shimmer)
+    implementation (libs.androidx.activity.ktx.v190)
 }

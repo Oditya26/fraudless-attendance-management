@@ -1,8 +1,11 @@
 package com.example.herenow
 
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -10,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.example.herenow.databinding.ActivityNavigationBinding
 import com.google.android.material.navigation.NavigationBarView
+import androidx.activity.addCallback
 
 class NavigationActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener {
 
@@ -46,6 +50,24 @@ class NavigationActivity : AppCompatActivity(), NavigationBarView.OnItemSelected
             // Sinkronkan tampilan tombol dengan state
             binding.bottomNavigationView.selectedItemId = currentItemId
         }
+
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val fm = supportFragmentManager
+                    val current = fm.findFragmentById(R.id.nav_host_fragment)
+
+                    if (current is DetailFragment || fm.backStackEntryCount > 0) {
+                        // Hanya DetailFragment (atau ada tumpukan) yang boleh back
+                        fm.popBackStack()
+                    } else {
+                        // Selain itu, tawarkan keluar aplikasi
+                        showExitConfirm()
+                    }
+                }
+            }
+        )
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -105,4 +127,22 @@ class NavigationActivity : AppCompatActivity(), NavigationBarView.OnItemSelected
             // Tidak addToBackStack untuk bottom nav (pola umum)
         }
     }
+
+    private fun showExitConfirm() {
+        AlertDialog.Builder(this)
+            .setMessage("Are you sure to exit?")
+            .setPositiveButton("Yes") { _, _ ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    finishAndRemoveTask()   // hapus dari Recents
+                } else {
+                    @Suppress("DEPRECATION")
+                    finishAffinity()
+                }
+            }
+            .setNegativeButton("No", null)
+            .setCancelable(true)
+            .show()
+    }
+
+
 }
