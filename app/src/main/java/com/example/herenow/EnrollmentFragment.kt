@@ -19,6 +19,7 @@ import com.example.herenow.data.ProfileRepository
 import com.example.herenow.data.local.TokenManager
 import com.example.herenow.databinding.FragmentEnrollmentBinding
 import com.example.herenow.model.EnrollmentCourse
+import com.facebook.shimmer.ShimmerFrameLayout
 import kotlinx.coroutines.launch
 
 class EnrollmentFragment : Fragment() {
@@ -50,6 +51,7 @@ class EnrollmentFragment : Fragment() {
         tokenManager = TokenManager(requireContext())
 
         // Header nama user
+        showNameSkeleton(true)
         loadAndSetUserName()
 
         // Recycler + item click: KIRIM HANYA classId (room akan diambil di Detail dari /api/sessions/class/{classId})
@@ -90,6 +92,7 @@ class EnrollmentFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        showNameSkeleton(true)
         loadAndSetUserName()
     }
 
@@ -98,11 +101,34 @@ class EnrollmentFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             if (!profileRepo.hasToken()) return@launch
             when (val res = profileRepo.fetchMe()) {
-                is com.example.herenow.data.MeResult.Success -> binding.txtName?.text = res.data.StudentFullName
-                else -> Unit
+                is com.example.herenow.data.MeResult.Success -> {
+                    binding.txtName?.text = res.data.StudentFullName
+                    showNameSkeleton(false)
+                }
+                is com.example.herenow.data.MeResult.Unauthorized -> {
+                    // biarkan skeleton tetap tampil; opsional: arahkan ke login di tempat lain
+                }
+                is com.example.herenow.data.MeResult.Failure -> {
+                    // JANGAN tampilkan toast/pesan mentah (bisa ada IP)
+                    // Biarkan skeleton tetap ON
+                }
             }
         }
     }
+
+    private fun showNameSkeleton(show: Boolean) {
+        val shimmer = binding.shimmerName as? ShimmerFrameLayout
+        if (show) {
+            binding.txtName?.visibility = View.GONE
+            shimmer?.visibility = View.VISIBLE
+            shimmer?.startShimmer()
+        } else {
+            shimmer?.stopShimmer()
+            shimmer?.visibility = View.GONE
+            binding.txtName?.visibility = View.VISIBLE
+        }
+    }
+
 
     /** GET /api/my-classes, map ke EnrollmentCourse, isi UI */
     private fun loadMyClasses() {
@@ -120,14 +146,14 @@ class EnrollmentFragment : Fragment() {
                 }
                 is MyClassesResult.Unauthorized -> {
                     tokenManager.clear()
-                    Toast.makeText(requireContext(), "Sesi berakhir. Silakan login ulang.", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(requireContext(), "Sesi berakhir. Silakan login ulang.", Toast.LENGTH_SHORT).show()
                     startActivity(android.content.Intent(requireContext(), LoginActivity::class.java).apply {
                         addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK or android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                     })
                     requireActivity().finish()
                 }
                 is MyClassesResult.Failure -> {
-                    Toast.makeText(requireContext(), res.message, Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(requireContext(), res.message, Toast.LENGTH_SHORT).show()
                     adapter.submitList(emptyList())
                     binding.btnSemester.isEnabled = false
                     binding.btnSemester.text = getString(R.string.no_data)

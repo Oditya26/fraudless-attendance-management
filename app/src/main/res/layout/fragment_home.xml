@@ -32,13 +32,30 @@
                 android:contentDescription="@string/name_prototype"
                 android:src="@drawable/profile" />
 
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerName"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                app:shimmer_auto_start="true">
+
+                <!-- Skeleton bar untuk nama -->
+                <View
+                    android:layout_width="160dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/bg_skeleton_rounded" />
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+
             <TextView
                 android:id="@+id/txtName"
                 style="@style/TitleTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/name_prototype"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <LinearLayout
@@ -49,13 +66,13 @@
 
             <ProgressBar
                 android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                style="?android:attr/progressBarStyleLarge"
+                android:layout_marginTop="16dp"
                 android:indeterminate="true"
-                android:layout_marginTop="16dp" />
+                android:visibility="gone" />
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animationEmpty"
@@ -68,11 +85,13 @@
                 app:lottie_rawRes="@raw/anim" />
 
             <TextView
-                style="@style/DescriptionBoldTextStyle"
                 android:id="@+id/txtEmpty"
+                style="@style/DescriptionBoldTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
                 android:text="@string/no_activity_found"
                 android:textColor="@color/grey"
                 android:visibility="gone" />

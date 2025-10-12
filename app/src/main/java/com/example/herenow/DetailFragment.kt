@@ -58,10 +58,15 @@ import java.util.concurrent.TimeUnit
 import android.location.Location
 import android.provider.Settings
 import android.view.Gravity
+import com.facebook.shimmer.ShimmerFrameLayout
 
 @Suppress("DEPRECATION")
 class DetailFragment : Fragment() {
     // --- di class DetailFragment ---
+
+    private fun ShimmerFrameLayout?.on() { this?.visibility = View.VISIBLE; this?.startShimmer() }
+    private fun ShimmerFrameLayout?.off() { this?.stopShimmer(); this?.visibility = View.GONE }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private data class SessionTiming(
@@ -297,10 +302,12 @@ class DetailFragment : Fragment() {
             return binding.root
         }
 
-        bindHeaderFallback()
+        showNameSkeleton(true)
+        showHeaderSkeleton(true)
+        showSessionInfoSkeleton(true)
+
         loadAndSetUserName()
         fetchClassDetail()
-
         return binding.root
     }
 
@@ -316,11 +323,16 @@ class DetailFragment : Fragment() {
                 is com.example.herenow.data.MeResult.Success -> {
                     binding.txtName?.text = res.data.StudentFullName
                     studentId = res.data.StudentId
+                    showNameSkeleton(false) // tampilkan nama
                 }
-                else -> Unit
+                else -> {
+                    // gagal → biarkan skeleton nama tetap ON (jangan isi default/jangan toast IP)
+                    showNameSkeleton(true)
+                }
             }
         }
     }
+
 
     // ---------- Presence helpers ----------
     private fun getSelectedPresence(sessionNo: Int = selectedSession): PresenceDto? {
@@ -408,31 +420,41 @@ class DetailFragment : Fragment() {
                     sessions = res.sessions.sortedBy { it.sessionNumber }
 
                     bindHeader(meta)
+                    showHeaderSkeleton(false)
 
                     if (selectedSession == AUTO_PICK) {
                         selectedSession = pickBestSession(sessions)
                     }
 
-                    // reset progres lokal untuk sesi yang baru dipilih
                     clearLocalAndMemoryForSession(selectedSession)
-
                     setupSessionsRecycler(meta, sessions)
+
                     updateHeaderRoomForSession(selectedSession)
+                    showSessionInfoSkeleton(false)
+
                     updateAttendanceUIForSession(selectedSession)
                 }
                 is ClassDetailResult.Unauthorized -> {
                     showLoading(false)
-                    Toast.makeText(requireContext(), "Session expired. Please login again.", Toast.LENGTH_SHORT).show()
+                    // Tetap skeleton; jangan bocorkan detail error
+                    showHeaderSkeleton(true)
+                    showSessionInfoSkeleton(true)
+                    setupSessionsRecycler(null, emptyList())
+                    binding.btnAttendance.visibility = View.GONE
                 }
                 is ClassDetailResult.Failure -> {
                     showLoading(false)
-                    Toast.makeText(requireContext(), res.message, Toast.LENGTH_SHORT).show()
+                    // Tetap skeleton; jangan tampilkan res.message
+                    showHeaderSkeleton(true)
+                    showSessionInfoSkeleton(true)
                     setupSessionsRecycler(null, emptyList())
-                    updateAttendanceUIForSession(if (selectedSession == AUTO_PICK) 1 else selectedSession)
+                    binding.btnAttendance.visibility = View.GONE
                 }
             }
         }
     }
+
+
 
     private fun showLoading(show: Boolean) = withBinding {
         progressBar?.visibility = if (show) View.VISIBLE else View.GONE
@@ -1156,13 +1178,14 @@ class DetailFragment : Fragment() {
             if (d != null && start?.isNotBlank() == true && end?.isNotBlank() == true) {
                 "${d.format(ID_DATE_FMT)}\n${start.take(5)} - ${end.take(5)} WIB"
             } else if (start?.isNotBlank() == true && end?.isNotBlank() == true) {
-                "${start?.take(5)} - ${end?.take(5)} WIB"
+                "${start.take(5)} - ${end.take(5)} WIB"
             } else null
         } catch (_: Exception) { null }
 
-
         tvDateAndDuration?.text = dateLbl
+        showSessionInfoSkeleton(false) // <- room & date sudah diisi
     }
+
 
     private fun hideAttendanceButton() = withBinding {
         btnAttendance.visibility = View.GONE
@@ -1240,6 +1263,51 @@ class DetailFragment : Fragment() {
 
         if (Looper.myLooper() == Looper.getMainLooper()) show() else {
             activity?.runOnUiThread { show() }
+        }
+    }
+
+    private fun showNameSkeleton(show: Boolean) {
+        val sh = binding.shimmerName as? ShimmerFrameLayout
+        if (show) { binding.txtName?.visibility = View.GONE; sh.on() }
+        else { sh.off(); binding.txtName?.visibility = View.VISIBLE }
+    }
+
+    private fun showHeaderSkeleton(show: Boolean) {
+        val shCode = binding.root.findViewById<ShimmerFrameLayout>(R.id.shimmerCode)
+        val shTitle = binding.root.findViewById<ShimmerFrameLayout>(R.id.shimmerTitle)
+        val shType = binding.root.findViewById<ShimmerFrameLayout>(R.id.shimmerClassType)
+        val shIns  = binding.root.findViewById<ShimmerFrameLayout>(R.id.shimmerInstructor)
+        val shCred = binding.root.findViewById<ShimmerFrameLayout>(R.id.shimmerCredits)
+
+        if (show) {
+            shCode.on(); shTitle.on(); shType.on(); shIns.on(); shCred.on()
+            binding.txtCode.visibility = View.GONE
+            binding.txtTitle.visibility = View.GONE
+            binding.txtClassType.visibility = View.GONE
+            binding.txtInstructor.visibility = View.GONE
+            binding.txtCredits.visibility = View.GONE
+        } else {
+            shCode.off(); shTitle.off(); shType.off(); shIns.off(); shCred.off()
+            binding.txtCode.visibility = View.VISIBLE
+            binding.txtTitle.visibility = View.VISIBLE
+            binding.txtClassType.visibility = View.VISIBLE
+            binding.txtInstructor.visibility = View.VISIBLE
+            binding.txtCredits.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showSessionInfoSkeleton(show: Boolean) {
+        val shRoom = binding.root.findViewById<ShimmerFrameLayout>(R.id.shimmerRoom)
+        val shDate = binding.root.findViewById<ShimmerFrameLayout>(R.id.shimmerDate)
+
+        if (show) {
+            shRoom.on(); shDate.on()
+            binding.txtRoom.visibility = View.GONE
+            binding.tvDateAndDuration?.visibility = View.GONE
+        } else {
+            shRoom.off(); shDate.off()
+            binding.txtRoom.visibility = View.VISIBLE
+            binding.tvDateAndDuration?.visibility = View.VISIBLE
         }
     }
 

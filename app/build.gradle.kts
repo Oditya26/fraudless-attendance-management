@@ -71,4 +71,5 @@ dependencies {
     implementation (libs.play.services.location)
 
     implementation (libs.zxing.android.embedded)
+    implementation (libs.shimmer)
 }

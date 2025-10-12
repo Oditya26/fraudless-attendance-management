@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileFragment">
 
     <!-- === LOADING OVERLAY === -->
@@ -47,7 +48,21 @@
                 android:layout_height="wrap_content"
                 android:text="@string/name_prototype"
                 android:textColor="@color/white"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:shimmer_auto_start="true">
+
+                <View
+                    android:layout_width="180dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/bg_skeleton_rounded"/>
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
             <!-- NIK / ID -->
             <TextView
@@ -57,7 +72,22 @@
                 android:layout_height="wrap_content"
                 android:text="@string/nim_prototype"
                 android:textColor="@color/white"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="4dp"
+                android:visibility="gone"/>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:shimmer_auto_start="true">
+
+                <View
+                    android:layout_width="120dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/bg_skeleton_rounded"/>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
         </LinearLayout>
 
         <!-- Bagian Konten -->
@@ -101,7 +131,23 @@
                 android:text="@string/email_prototype"
                 android:layout_marginStart="28dp"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
+
+            <!-- Skeleton Email -->
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="4dp"
+                app:shimmer_auto_start="true">
+
+                <View
+                    android:layout_width="220dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/bg_skeleton_rounded"/>
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
             <!-- Garis pemisah -->
             <View

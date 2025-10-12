@@ -17,6 +17,7 @@ import com.example.herenow.data.local.TokenManager
 import com.example.herenow.databinding.FragmentHomeBinding
 import com.example.herenow.notify.NotificationHelper
 import com.example.herenow.notify.ReminderScheduler
+import com.facebook.shimmer.ShimmerFrameLayout
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -88,6 +89,7 @@ class HomeFragment : Fragment() {
         // Pastikan channel notifikasi siap
         NotificationHelper.ensureChannel(requireContext())
 
+        showNameSkeleton(true)
         loadAndSetUserName()
         refreshNowCardFromApi()
     }
@@ -95,20 +97,38 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
+        showNameSkeleton(true)
         loadAndSetUserName()
         refreshNowCardFromApi()
     }
 
     private fun loadAndSetUserName() {
         viewLifecycleOwner.lifecycleScope.launch {
-            if (!profileRepo.hasToken()) return@launch
+            if (!profileRepo.hasToken()) {
+                // Tidak ada token → biarkan skeleton (tidak set default nama)
+                return@launch
+            }
             when (val res = profileRepo.fetchMe()) {
-                is com.example.herenow.data.MeResult.Success ->
+                is com.example.herenow.data.MeResult.Success -> {
                     binding.txtName.text = res.data.StudentFullName
-                else -> Unit
+                    showNameSkeleton(false)
+                    binding.txtName.visibility = View.VISIBLE
+                }
+                is com.example.herenow.data.MeResult.Unauthorized -> {
+                    // Tetap skeleton, jangan menaruh default value
+                    // (opsional) bisa set tooltip/tap-to-retry jika diperlukan
+                }
+                is com.example.herenow.data.MeResult.Failure -> {
+                    // Tetap skeleton, jangan bocorkan detail error/IP
+                    // (jika mau, tampilkan snackbar generik tanpa host/IP)
+                }
+                else -> {
+                    // No-op, skeleton tetap on
+                }
             }
         }
     }
+
 
     // ---------- Main logic ----------
     @RequiresApi(Build.VERSION_CODES.O)
@@ -236,7 +256,9 @@ class HomeFragment : Fragment() {
                     showLoading(false); showEmpty()
                 }
                 is TodayNowResult.Failure -> {
-                    showLoading(false); showEmpty(message = result.message)
+                    showLoading(false)
+                    // Jangan lempar message asli (bisa ada URL/IP)
+                    showEmpty(message = safeErrorMessage(result.message))
                 }
             }
         }
@@ -256,8 +278,10 @@ class HomeFragment : Fragment() {
         binding.layoutHomeScheduleSection.visibility = View.GONE
         binding.animationEmpty.visibility = View.VISIBLE
         binding.txtEmpty?.visibility = View.VISIBLE
+        // Hanya tampilkan pesan yang sudah disanitasi (dipanggil via safeErrorMessage)
         if (!message.isNullOrBlank()) binding.txtEmpty?.text = message
     }
+
 
     private fun setAttendActionUI(onClick: () -> Unit) {
         binding.btnAttendance.apply {
@@ -362,6 +386,33 @@ class HomeFragment : Fragment() {
             setOnClickListener { onClick() }
         }
     }
+
+    private fun showNameSkeleton(show: Boolean) {
+        val shimmer = binding.shimmerName as? ShimmerFrameLayout
+        if (show) {
+            binding.txtName.visibility = View.GONE
+            shimmer?.visibility = View.VISIBLE
+            shimmer?.startShimmer()
+        } else {
+            shimmer?.stopShimmer()
+            shimmer?.visibility = View.GONE
+            // txtName visibility akan diatur oleh caller (sukses/fail)
+        }
+    }
+
+    private fun safeErrorMessage(raw: String?): String {
+        // Jika ada URL/IP/host, samarkan + gunakan pesan generik.
+        if (raw.isNullOrBlank()) return "Tidak dapat memuat data saat ini."
+        val leaky = listOf("http://", "https://", "://", "/", "Failed to connect", "timeout", "unreachable", "refused")
+        val hasHostLike = Regex("""\b\d{1,3}(\.\d{1,3}){3}\b|[A-Za-z0-9.-]+\.[A-Za-z]{2,}""").containsMatchIn(raw)
+        return if (leaky.any { raw.contains(it, ignoreCase = true) } || hasHostLike) {
+            "Tidak dapat terhubung. Periksa koneksi internet Anda."
+        } else {
+            raw
+        }
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

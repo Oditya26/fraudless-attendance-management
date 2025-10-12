@@ -304,8 +304,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="logo_herenow" />
-                            <entry key="sourceFile" value="D:\TUGAS BINUS\SEM.6\Logo HereNow.svg" />
+                            <entry key="outputName" value="icon_herenow" />
+                            <entry key="sourceFile" value="D:\TUGAS BINUS\SEM.6\Icon HereNow.svg" />
                           </map>
                         </option>
                       </PersistentState>

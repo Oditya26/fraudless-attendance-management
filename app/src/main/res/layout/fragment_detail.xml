@@ -31,13 +31,26 @@
                 android:contentDescription="@string/name_prototype"
                 android:src="@drawable/profile" />
 
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:shimmer_auto_start="true">
+
+                <View
+                    android:layout_width="180dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/bg_skeleton_rounded"/>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
             <TextView
                 android:id="@+id/txtName"
                 style="@style/TitleTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/name_prototype"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <ProgressBar
@@ -83,13 +96,26 @@
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_teacher" />
 
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmerRoom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:shimmer_auto_start="true">
+
+                        <View
+                            android:layout_width="120dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/bg_skeleton_rounded"/>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
                     <TextView
                         android:id="@+id/txtRoom"
                         style="@style/DescriptionRegularTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/room_code_value"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
                 <!-- Code -->
@@ -106,16 +132,43 @@
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_book" />
 
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmerCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:shimmer_auto_start="true">
+
+                        <View
+                            android:layout_width="100dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/bg_skeleton_rounded"/>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
                     <TextView
                         android:id="@+id/txtCode"
                         style="@style/DescriptionRegularTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/course_code_prototype"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
                 <!-- Title -->
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmerTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="26dp"
+                    android:layout_marginBottom="12dp"
+                    app:shimmer_auto_start="true">
+
+                    <View
+                        android:layout_width="200dp"
+                        android:layout_height="16dp"
+                        android:background="@drawable/bg_skeleton_rounded"/>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <TextView
                     android:id="@+id/txtTitle"
                     style="@style/DescriptionRegularTextStyle"
@@ -124,7 +177,8 @@
                     android:layout_marginStart="26dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/course_name_prototype"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:visibility="gone"/>
 
                 <!-- Class type -->
                 <LinearLayout
@@ -140,13 +194,26 @@
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_course_category" />
 
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmerClassType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:shimmer_auto_start="true">
+
+                        <View
+                            android:layout_width="120dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/bg_skeleton_rounded"/>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
                     <TextView
                         android:id="@+id/txtClassType"
                         style="@style/DescriptionRegularTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/course_category_value"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
                 <!-- Instructor -->
@@ -163,13 +230,26 @@
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_job" />
 
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmerInstructor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:shimmer_auto_start="true">
+
+                        <View
+                            android:layout_width="180dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/bg_skeleton_rounded"/>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
                     <TextView
                         android:id="@+id/txtInstructor"
                         style="@style/DescriptionRegularTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/name_prototype"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
                 <!-- Credits -->
@@ -186,6 +266,19 @@
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_sks" />
 
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmerCredits"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:shimmer_auto_start="true">
+
+                        <View
+                            android:layout_width="80dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/bg_skeleton_rounded"/>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+
                     <TextView
                         android:id="@+id/txtCredits"
                         style="@style/DescriptionRegularTextStyle"
@@ -193,7 +286,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:text="@string/credit_number"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <!-- Credits -->
@@ -210,6 +304,17 @@
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_time" />
 
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmerDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:shimmer_auto_start="true">
+
+                        <View
+                            android:layout_width="220dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/bg_skeleton_rounded"/>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
 
                     <TextView
                         android:id="@+id/tvDateAndDuration"
@@ -218,7 +323,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:text="@string/date_and_duration_value"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
 

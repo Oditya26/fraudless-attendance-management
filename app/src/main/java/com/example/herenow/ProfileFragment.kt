@@ -12,6 +12,8 @@ import com.example.herenow.data.MeResult
 import com.example.herenow.data.ProfileRepository
 import com.example.herenow.data.local.TokenManager
 import com.example.herenow.databinding.FragmentProfileBinding
+import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
@@ -34,70 +36,100 @@ class ProfileFragment : Fragment() {
         repo = ProfileRepository(requireContext())
         tokenManager = TokenManager(requireContext())
 
-        // tombol logout
+        // Logout
         binding.btnLogout.setOnClickListener {
             lifecycleScope.launch {
-                showLoading(true)
+                showLogoutLoading(true)
                 when (val result = repo.logout()) {
                     is LogoutResult.Success -> {
-                        // clear token lokal
                         tokenManager.clear()
-                        showLoading(false)
+                        showLogoutLoading(false)
                         goToLogin()
                     }
                     is LogoutResult.Unauthorized -> {
                         tokenManager.clear()
-                        showLoading(false)
+                        showLogoutLoading(false)
                         goToLogin()
                     }
                     is LogoutResult.Failure -> {
-                        showLoading(false)
-                        // misalnya tampilkan di TextView email
-                        binding.tvEmail.text = result.message
+                        showLogoutLoading(false)
+                        // Pesan generik agar tidak membocorkan host/IP
+                        Snackbar.make(binding.root, "Gagal logout. Coba lagi.", Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
         }
 
-
-        // muat profil
+        // Muat profil -> skeleton dulu
+        showProfileSkeleton(true)
         loadProfile()
     }
 
     private fun loadProfile() {
         viewLifecycleOwner.lifecycleScope.launch {
-            // token check
             if (!repo.hasToken()) {
                 goToLogin(); return@launch
             }
 
-            showLoading(true)
+            // Skeleton ON saat fetch
+            showProfileSkeleton(true)
+
             when (val result = repo.fetchMe()) {
                 is MeResult.Success -> {
-                    showLoading(false)
                     val me = result.data
                     binding.tvName.text = me.StudentFullName
                     binding.tvId.text = me.StudentId
                     binding.tvEmail.text = me.Email
+
+                    // Tampilkan konten, matikan skeleton
+                    showProfileSkeleton(false)
                 }
                 is MeResult.Unauthorized -> {
-                    showLoading(false)
                     tokenManager.clear()
+                    // Tetap skeleton (jangan tampilkan default/error), lalu ke login
+                    showProfileSkeleton(true)
                     goToLogin()
                 }
                 is MeResult.Failure -> {
-                    showLoading(false)
-                    binding.tvName.text = "Gagal memuat profil"
-                    binding.tvId.text = "-"
-                    binding.tvEmail.text = result.message
+                    // Tetap skeleton (tidak mengisi teks error atau default)
+                    showProfileSkeleton(true)
                 }
             }
         }
     }
 
-    private fun showLoading(show: Boolean) {
+    /** Skeleton untuk semua field profil (avatar, nama, id, email) */
+    private fun showProfileSkeleton(show: Boolean) {
+        val shName   = binding.shimmerName as? ShimmerFrameLayout
+        val shId     = binding.shimmerId as? ShimmerFrameLayout
+        val shEmail  = binding.shimmerEmail as? ShimmerFrameLayout
+
+        if (show) {
+            // Skeleton ON
+            binding.tvName.visibility = View.GONE
+            binding.tvId.visibility = View.GONE
+            binding.tvEmail.visibility = View.GONE
+
+            shName?.visibility   = View.VISIBLE; shName?.startShimmer()
+            shId?.visibility     = View.VISIBLE; shId?.startShimmer()
+            shEmail?.visibility  = View.VISIBLE; shEmail?.startShimmer()
+        } else {
+            // Skeleton OFF, tampilkan konten
+            shName?.stopShimmer();   shName?.visibility   = View.GONE
+            shId?.stopShimmer();     shId?.visibility     = View.GONE
+            shEmail?.stopShimmer();  shEmail?.visibility  = View.GONE
+
+            binding.tvName.visibility   = View.VISIBLE
+            binding.tvId.visibility     = View.VISIBLE
+            binding.tvEmail.visibility  = View.VISIBLE
+        }
+    }
+
+    /** Spinner khusus proses logout (tidak untuk load profil) */
+    private fun showLogoutLoading(show: Boolean) {
         binding.progressBar?.visibility = if (show) View.VISIBLE else View.GONE
-        binding.contentGroup?.visibility = if (show) View.GONE else View.VISIBLE
+        // Tidak menyembunyikan contentGroup agar skeleton tetap terlihat jika sedang tampil
+        binding.btnLogout.isEnabled = !show
     }
 
     private fun goToLogin() {

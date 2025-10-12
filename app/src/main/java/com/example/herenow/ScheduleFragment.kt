@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
+import com.facebook.shimmer.ShimmerFrameLayout
 
 class ScheduleFragment : Fragment() {
 
@@ -76,6 +77,7 @@ class ScheduleFragment : Fragment() {
         binding.scheduleRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Header nama user
+        showNameSkeleton(true)
         loadAndSetUserName()
 
         // UI kalender & dropdown
@@ -90,6 +92,7 @@ class ScheduleFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        showNameSkeleton(true)
         loadAndSetUserName()
     }
 
@@ -98,9 +101,30 @@ class ScheduleFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             if (!profileRepo.hasToken()) return@launch
             when (val res = profileRepo.fetchMe()) {
-                is com.example.herenow.data.MeResult.Success -> binding.txtName.text = res.data.StudentFullName
-                else -> Unit
+                is com.example.herenow.data.MeResult.Success -> {
+                    binding.txtName.text = res.data.StudentFullName
+                    showNameSkeleton(false)
+                }
+                is com.example.herenow.data.MeResult.Unauthorized -> {
+                    // tetap skeleton; jika perlu redirect login di tempat lain
+                }
+                is com.example.herenow.data.MeResult.Failure -> {
+                    // tetap skeleton; jangan tampilkan toast/error yang berpotensi berisi IP
+                }
             }
+        }
+    }
+
+    private fun showNameSkeleton(show: Boolean) {
+        val shimmer = binding.shimmerName as? ShimmerFrameLayout
+        if (show) {
+            binding.txtName.visibility = View.GONE
+            shimmer?.visibility = View.VISIBLE
+            shimmer?.startShimmer()
+        } else {
+            shimmer?.stopShimmer()
+            shimmer?.visibility = View.GONE
+            binding.txtName.visibility = View.VISIBLE
         }
     }
 
