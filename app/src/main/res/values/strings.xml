@@ -64,4 +64,9 @@
 
     <string name="loading">Loading…</string>
     <string name="no_data">No Data</string>
+
+    <string name="home">Home</string>
+    <string name="schedule">Schedule</string>
+    <string name="enrollment">Enrollment</string>
+    <string name="profile">Profile</string>
 </resources>

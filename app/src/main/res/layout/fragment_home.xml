@@ -72,7 +72,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
                 android:indeterminate="true"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:indeterminateTint="@color/rich_electric_blue"/>
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animationEmpty"

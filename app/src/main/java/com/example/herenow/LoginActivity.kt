@@ -53,25 +53,40 @@ class LoginActivity : AppCompatActivity() {
             val password = binding.etPassword.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
-                showCustomToast("Email dan Password tidak boleh kosong")
+                showCustomToast("Email and Password cannot be empty.")
                 return@setOnClickListener
             }
 
-            binding.btnLogin.isEnabled = false
+            // Tombol berubah seperti ditekan
+            binding.btnLogin.apply {
+                isEnabled = false
+                alpha = 0.6f // efek ditekan
+                text = "Processing..."
+            }
+
+            // Tampilkan loading
+            binding.progressBarLogin.visibility = android.view.View.VISIBLE
 
             lifecycleScope.launch {
                 when (val result = authRepository.login(email, password)) {
                     is LoginResult.Success -> {
-                        showCustomToast("Login berhasil")
+                        showCustomToast("Login successful")
                         goMain()
                     }
                     is LoginResult.Failure -> {
                         showCustomToast(result.message)
-                        binding.btnLogin.isEnabled = true
+                        // Kembalikan tombol ke keadaan semula
+                        binding.btnLogin.apply {
+                            isEnabled = true
+                            alpha = 1f
+                            text = "Login"
+                        }
+                        binding.progressBarLogin.visibility = android.view.View.GONE
                     }
                 }
             }
         }
+
     }
 
     private fun goMain() {

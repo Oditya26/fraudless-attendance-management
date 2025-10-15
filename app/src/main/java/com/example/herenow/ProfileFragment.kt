@@ -54,7 +54,7 @@ class ProfileFragment : Fragment() {
                     is LogoutResult.Failure -> {
                         showLogoutLoading(false)
                         // Pesan generik agar tidak membocorkan host/IP
-                        Snackbar.make(binding.root, "Gagal logout. Coba lagi.", Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(binding.root, "Logout failed. Please try again.", Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }

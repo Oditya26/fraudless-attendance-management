@@ -6,14 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileFragment">
 
-    <!-- === LOADING OVERLAY === -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:visibility="gone"
-        android:indeterminate="true"
-        android:layout_centerInParent="true" />
+
 
     <!-- === SEMUA KONTEN DIBUNGKUS DI SINI === -->
     <LinearLayout
@@ -168,6 +161,16 @@
                 android:textColor="@color/white"
                 android:padding="12dp"
                 android:background="@drawable/rounded_button" />
+
+            <!-- === LOADING OVERLAY === -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:visibility="gone"
+                android:indeterminate="true"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/rich_electric_blue"/>
         </LinearLayout>
 
     </LinearLayout>

@@ -59,6 +59,8 @@ import android.location.Location
 import android.provider.Settings
 import android.view.Gravity
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 
 @Suppress("DEPRECATION")
 class DetailFragment : Fragment() {
@@ -891,14 +893,13 @@ class DetailFragment : Fragment() {
                     val expectedN = normalizeCode(res.data.RoomCode)
                     val isMatch = scannedN == expectedN
                     toastMatch("QR", isMatch)
-
+                    showCustomToast("Take photo of your face")
+                    delay(2500)
                     // SIMPAN LOKAL
                     LocalPresenceStore.set(requireContext(), presenceId, "qr", isMatch)
 
                     if (isMatch) {
                         setWaitingUI("Waiting for Face Recognition")
-                        // 👉 arahkan user untuk memindai wajah
-                        showCustomToast("Point camera to face")
                         if (isFaceOkLocal()) {
                             // kalau tiga langkah sudah OK, finalize
                             finalizeIfAllLocalOk(selectedSession)

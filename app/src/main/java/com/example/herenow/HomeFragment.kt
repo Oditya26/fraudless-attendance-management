@@ -340,7 +340,7 @@ class HomeFragment : Fragment() {
             totalSessions = 1,
             selectedSession = sessionNumber // <— kirim eksplisit sesi yang diklik
         ).apply {
-            arguments?.putBoolean("autoStartAttendance", true)
+            arguments?.putBoolean("autoStartAttendance", false)
         }
 
         requireActivity().supportFragmentManager.beginTransaction()
@@ -402,11 +402,11 @@ class HomeFragment : Fragment() {
 
     private fun safeErrorMessage(raw: String?): String {
         // Jika ada URL/IP/host, samarkan + gunakan pesan generik.
-        if (raw.isNullOrBlank()) return "Tidak dapat memuat data saat ini."
+        if (raw.isNullOrBlank()) return "Unable to load data at this time."
         val leaky = listOf("http://", "https://", "://", "/", "Failed to connect", "timeout", "unreachable", "refused")
         val hasHostLike = Regex("""\b\d{1,3}(\.\d{1,3}){3}\b|[A-Za-z0-9.-]+\.[A-Za-z]{2,}""").containsMatchIn(raw)
         return if (leaky.any { raw.contains(it, ignoreCase = true) } || hasHostLike) {
-            "Tidak dapat terhubung. Periksa koneksi internet Anda."
+            "Unable to connect. Check your internet connection."
         } else {
             raw
         }

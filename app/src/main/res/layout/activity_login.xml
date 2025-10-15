@@ -109,6 +109,14 @@
             android:textColor="@color/white"
             android:padding="12dp"
             android:background="@drawable/rounded_button"/>
+
+        <ProgressBar
+            android:id="@+id/progressBarLogin"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:indeterminateTint="@color/rich_electric_blue" />
     </LinearLayout>
 
     </FrameLayout>

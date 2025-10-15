@@ -73,4 +73,8 @@ dependencies {
     implementation (libs.zxing.android.embedded)
     implementation (libs.shimmer)
     implementation (libs.androidx.activity.ktx.v190)
+
+    implementation (libs.androidx.navigation.fragment.ktx)
+    implementation (libs.androidx.navigation.ui.ktx)
+
 }
