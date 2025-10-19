@@ -69,4 +69,8 @@
     <string name="schedule">Schedule</string>
     <string name="enrollment">Enrollment</string>
     <string name="profile">Profile</string>
+
+    <string name="exit_message">Are you sure you want to exit?</string>
+    <string name="exit_yes">Yes</string>
+    <string name="exit_no">No</string>
 </resources>

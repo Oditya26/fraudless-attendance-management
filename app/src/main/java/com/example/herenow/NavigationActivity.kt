@@ -1,8 +1,12 @@
 package com.example.herenow
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MenuItem
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -133,20 +137,59 @@ class NavigationActivity : AppCompatActivity(), NavigationBarView.OnItemSelected
         }
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     private fun showExitConfirm() {
-        AlertDialog.Builder(this)
-            .setMessage("Are you sure to exit?")
-            .setPositiveButton("Yes") { _, _ ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    finishAndRemoveTask()   // hapus dari Recents
-                } else {
-                    @Suppress("DEPRECATION")
-                    finishAffinity()
-                }
+        val builder = AlertDialog.Builder(this, R.style.RoundedAlertDialog)
+
+        // 🔹 Container agar ada margin ke tepi layar
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(8, 8, 8, 8) // margin ke layar
+            gravity = Gravity.CENTER
+        }
+
+        // 🔹 Text Message
+        val messageView = TextView(this).apply {
+            text = getString(R.string.exit_message)
+            setTextAppearance(R.style.DescriptionBoldTextStyle)
+            setPadding(8, 8, 8, 8)
+        }
+
+        container.addView(messageView)
+        builder.setView(container)
+
+        builder.setPositiveButton(getString(R.string.exit_yes)) { _, _ ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAndRemoveTask()
+            } else {
+                @Suppress("DEPRECATION")
+                finishAffinity()
             }
-            .setNegativeButton("No", null)
-            .setCancelable(true)
-            .show()
+        }
+
+        builder.setNegativeButton(getString(R.string.exit_no), null)
+        builder.setCancelable(true)
+
+        val dialog = builder.create()
+        dialog.show()
+
+        // 🔹 Rounded background
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
+
+        // 🔹 Tombol ke tengah
+        val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+        val accentColor = getColor(R.color.rich_electric_blue)
+
+        positiveButton.setTextColor(accentColor)
+        negativeButton.setTextColor(accentColor)
+        positiveButton.setTextAppearance(R.style.DescriptionBoldTextStyle)
+        negativeButton.setTextAppearance(R.style.DescriptionBoldTextStyle)
+
+        // 🔹 Pusatkan tombol
+        val parent = positiveButton.parent as LinearLayout
+        parent.gravity = Gravity.CENTER
+        parent.setPadding(8, 8, 8, 8)
     }
 
 
