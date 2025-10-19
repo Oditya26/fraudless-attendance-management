@@ -344,7 +344,6 @@ class HomeFragment : Fragment() {
         }
 
         requireActivity().supportFragmentManager.beginTransaction()
-            .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
             .replace(R.id.nav_host_fragment, detail)
             .addToBackStack(null)
             .commit()

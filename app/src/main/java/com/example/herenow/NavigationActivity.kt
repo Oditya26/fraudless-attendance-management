@@ -116,15 +116,20 @@ class NavigationActivity : AppCompatActivity(), NavigationBarView.OnItemSelected
             else -> R.anim.slide_in_right to R.anim.slide_out_left
         }
 
-        // Gunakan commit{} KTX; tidak melakukan apa-apa di onResume,
-        // hanya saat pengguna memilih tab / first launch.
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             if (!isInitial) {
                 setCustomAnimations(enterAnim, exitAnim)
             }
+
+            // 🔥 Kosongkan semua backstack sebelumnya agar antar-tab tidak nyampur
+            supportFragmentManager.popBackStack(
+                null,
+                androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+
             replace(R.id.nav_host_fragment, fragment)
-            // Tidak addToBackStack untuk bottom nav (pola umum)
+            // Tidak addToBackStack untuk bottom nav
         }
     }
 
