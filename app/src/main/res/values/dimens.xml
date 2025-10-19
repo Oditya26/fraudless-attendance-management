@@ -4,4 +4,6 @@
     <dimen name="dropdown_max_height">300dp</dimen>
     <dimen name="session_spacing">1dp</dimen>
     <dimen name="session_edge_spacing">1dp</dimen>
+    <dimen name="dropdown_width_large">160dp</dimen>
+    <dimen name="dropdown_width_medium">120dp</dimen>
 </resources>

@@ -164,11 +164,24 @@ class EnrollmentFragment : Fragment() {
 
     /** Bangun daftar semester (unik) dan setup dropdown + list awal */
     private fun setupSemesterDropdownAndList(data: List<EnrollmentCourse>) {
-        // bangun key konsisten
-        val semesters: List<SemesterItem> = data
-            .map { SemesterItem("${it.classYear}-${it.semesterNumber}", it.semester) } // it.semester yang lama dipakai hanya sebagai label
+        val semesters: List<SemesterItem> = data.map {
+            val year = it.classYear?.toString() ?: "0"
+            val semNum = it.semesterNumber?.toString()?.toIntOrNull() ?: 0
+
+            val semLabel = if (semNum % 2 == 1) {
+                "Odd Semester, $year"
+            } else {
+                "Even Semester, $year"
+            }
+
+            SemesterItem(
+                key = "$year-$semNum",
+                label = semLabel
+            )
+        }
             .distinctBy { it.key }
-            .sortedBy { it.key } // atau custom order
+            .sortedWith(compareBy({ it.key.split("-")[0].toIntOrNull() ?: 0 },
+                { it.key.split("-")[1].toIntOrNull() ?: 0 }))
 
         if (semesters.isEmpty()) {
             adapter.submitList(emptyList())
@@ -177,27 +190,66 @@ class EnrollmentFragment : Fragment() {
             return
         }
 
-        val defaultSem = semesters.first()
-        setSemester(defaultSem.key, data)
+        // 🔹 Pilih semester terbaru (tahun & semester terbesar)
+        val latestSem = semesters.maxWithOrNull(compareBy<SemesterItem> {
+            it.key.split("-")[0].toIntOrNull() ?: 0
+        }.thenBy {
+            it.key.split("-")[1].toIntOrNull() ?: 0
+        }) ?: semesters.last()
 
+        // 🔹 Set default semester
+        setSemester(latestSem.key, data)
         binding.btnSemester.isEnabled = true
-        binding.btnSemester.text = defaultSem.label
+        binding.btnSemester.text = latestSem.label
+
         binding.btnSemester.setOnClickListener { v ->
             val popup = ListPopupWindow(requireContext(), null).apply {
                 anchorView = v
                 isModal = true
                 width = v.width
-                setAdapter(ArrayAdapter(requireContext(), R.layout.item_dropdown_center, semesters.map { it.label }))
+
+                setAdapter(
+                    ArrayAdapter(
+                        requireContext(),
+                        R.layout.item_dropdown_center,
+                        semesters.map { it.label }
+                    )
+                )
+
+                horizontalOffset = 0
+                setDropDownGravity(Gravity.START)
+
                 setOnItemClickListener { _, _, position, _ ->
                     val selected = semesters[position]
                     binding.btnSemester.text = selected.label
                     setSemester(selected.key, data)
                     dismiss()
                 }
+
+                // 🔽 Saat popup ditutup, panah kembali ke bawah
+                setOnDismissListener {
+                    binding.btnSemester.setCompoundDrawablesWithIntrinsicBounds(
+                        null, null,
+                        resources.getDrawable(R.drawable.ic_chevron_down, null),
+                        null
+                    )
+                }
             }
+
+            // 🔼 Saat popup ditampilkan, ubah ke arrow up
+            binding.btnSemester.setCompoundDrawablesWithIntrinsicBounds(
+                null, null,
+                resources.getDrawable(R.drawable.ic_chevron_up, null),
+                null
+            )
+
             popup.show()
         }
+
     }
+
+
+
 
     private fun setSemester(semesterKey: String, data: List<EnrollmentCourse>) {
         // filter berdasarkan KEY stabil, bukan label

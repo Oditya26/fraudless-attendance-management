@@ -81,7 +81,7 @@ class ScheduleFragment : Fragment() {
         loadAndSetUserName()
 
         // UI kalender & dropdown
-        setupMonthDropdown()
+        setupMonthYearDropdowns()
         setupCalendar()
 
         // Ambil meta my-classes dulu → lanjut fetch sessions
@@ -211,9 +211,18 @@ class ScheduleFragment : Fragment() {
     /** Header teks di atas kalender mengikuti selectedDate */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setMonthHeaderText() {
-        val fmt = DateTimeFormatter.ofPattern("MMMM yyyy", Locale("en", "US"))
-        binding.spinnerMonth.setText(selectedDate.format(fmt), false)
+        val monthFmt = DateTimeFormatter.ofPattern("MMMM", Locale("en", "US"))
+        val yearFmt = DateTimeFormatter.ofPattern("yyyy", Locale("en", "US"))
+
+        // tulis hanya nama bulan ke spinnerMonth
+        binding.spinnerMonth.setText(selectedDate.format(monthFmt), false)
+
+        // tulis hanya tahun ke spinnerYear
+        binding.spinnerYear.setText(selectedDate.format(yearFmt), false)
     }
+
+
+
 
     /** Ubah bulan-tahun dari kode, sinkronkan semua & refetch data */
     @RequiresApi(Build.VERSION_CODES.O)
@@ -408,48 +417,95 @@ class ScheduleFragment : Fragment() {
 
     // ================= Dropdown Bulan–Tahun (AutoCompleteTextView) =================
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setupMonthDropdown() {
-        val items = generateMonthYearList() // "April 2025", "March 2025", ...
-        val adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.item_spinner_dropdown,  // isi dropdown: teks hitam, bg putih
-            items
+    private fun setupMonthYearDropdowns() {
+        // ===== Bulan =====
+        val months = listOf(
+            "January","February","March","April","May","June",
+            "July","August","September","October","November","December"
         )
 
-        val actv: AppCompatAutoCompleteTextView = binding.spinnerMonth
-        actv.setAdapter(adapter)
-
-        // batasi tinggi dropdown agar tidak memenuhi layar
-        actv.dropDownHeight = resources.getDimensionPixelSize(R.dimen.dropdown_max_height)
-        actv.dropDownWidth  = LayoutParams.WRAP_CONTENT
-
-        // sinkron label awal
-        syncDropdownToSelectedDate()
-
-        actv.setOnItemClickListener { _, _, position, _ ->
-            val selected = items[position]
-            val parts = selected.split(" ")
-            if (parts.size == 2) {
-                val month = monthNameToNumber(parts[0])
-                val year  = parts[1].toIntOrNull() ?: return@setOnItemClickListener
-                updateCalendarTo(year, month)
-            }
+        val monthAdapter = ArrayAdapter(
+            requireContext(),
+            R.layout.item_spinner_dropdown,
+            months
+        ).apply {
+            setDropDownViewResource(R.layout.item_spinner_dropdown)
         }
 
-        // tap field → show dropdown
-        actv.setOnClickListener { actv.showDropDown() }
+        val monthSpinner = binding.spinnerMonth
+        monthSpinner.setAdapter(monthAdapter)
+        monthSpinner.dropDownWidth = resources.getDimensionPixelSize(R.dimen.dropdown_width_large)
+        monthSpinner.dropDownHorizontalOffset = 0
+        monthSpinner.textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+        // ===== Tahun =====
+        val currentYear = LocalDate.now().year
+        val years = (currentYear downTo 1990).map { it.toString() }
+
+        val yearAdapter = ArrayAdapter(
+            requireContext(),
+            R.layout.item_spinner_dropdown,
+            years
+        ).apply {
+            setDropDownViewResource(R.layout.item_spinner_dropdown)
+        }
+
+        val yearSpinner = binding.spinnerYear
+        yearSpinner.setAdapter(yearAdapter)
+        yearSpinner.dropDownWidth = resources.getDimensionPixelSize(R.dimen.dropdown_width_medium)
+        yearSpinner.dropDownHorizontalOffset = 0
+        yearSpinner.textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+
+        monthSpinner.post {
+            monthSpinner.dropDownWidth = monthSpinner.width
+        }
+        yearSpinner.post {
+            yearSpinner.dropDownWidth = yearSpinner.width
+        }
+
+        // ===== Set nilai awal =====
+        monthSpinner.setText(months[selectedDate.monthValue - 1], false)
+        yearSpinner.setText(selectedDate.year.toString(), false)
+
+        monthSpinner.setOnItemClickListener { _, _, position, _ ->
+            val newMonth = position + 1
+            val newYear = binding.spinnerYear.text.toString().toIntOrNull() ?: selectedDate.year
+            updateCalendarTo(year = newYear, month = newMonth)
+        }
+
+        // ===== Listener Tahun =====
+        yearSpinner.setOnItemClickListener { _, _, position, _ ->
+            val newYear = years[position].toInt()
+            updateCalendarTo(
+                year = newYear,
+                month = monthSpinner.text.toString().let { monthNameToNumber(it) }
+            )
+        }
+
+        // ===== Biar dropdown muncul saat diklik =====
+        monthSpinner.setOnClickListener { monthSpinner.showDropDown() }
+        yearSpinner.setOnClickListener { yearSpinner.showDropDown() }
     }
+
+
 
     /** Sesuaikan teks dropdown dengan selectedDate */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun syncDropdownToSelectedDate() {
-        val fmt = DateTimeFormatter.ofPattern("MMMM yyyy", Locale("en", "US"))
-        val label = selectedDate.format(fmt)
-        val actv: AppCompatAutoCompleteTextView = binding.spinnerMonth
-        if (actv.text.toString() != label) {
-            actv.setText(label, false)
-        }
+        val monthFmt = DateTimeFormatter.ofPattern("MMMM", Locale("en", "US"))
+        val yearFmt = DateTimeFormatter.ofPattern("yyyy", Locale("en", "US"))
+
+        val monthLabel = selectedDate.format(monthFmt)
+        val yearLabel = selectedDate.format(yearFmt)
+
+        val monthActv: AppCompatAutoCompleteTextView = binding.spinnerMonth
+        val yearActv: AppCompatAutoCompleteTextView = binding.spinnerYear
+
+        if (monthActv.text.toString() != monthLabel) monthActv.setText(monthLabel, false)
+        if (yearActv.text.toString() != yearLabel) yearActv.setText(yearLabel, false)
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun generateMonthYearList(): List<String> {

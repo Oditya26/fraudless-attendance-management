@@ -85,30 +85,56 @@
                     android:id="@+id/btnPrevMonth"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:contentDescription="@string/more_detail"
                     android:padding="4dp"
                     android:src="@drawable/ic_arrow_left" />
 
-                <!-- fragment_schedule.xml -->
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                    android:id="@+id/spinnerMonth"
-                    style="@style/TitleTextStyle"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@drawable/bg_spinner_base"
-                    android:minWidth="160dp"
-                    android:minEms="10"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:dropDownWidth="wrap_content"
-                    android:dropDownVerticalOffset="10dp"
-                    android:inputType="none"
-                    android:focusable="false"
-                    android:clickable="true"
-                    android:gravity="center"/>
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <!-- Spinner Bulan -->
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/spinnerMonth"
+                        style="@style/DescriptionBoldTextStyle"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_spinner_base"
+                        android:minWidth="120dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:dropDownHeight="200dp"
+                        tools:ignore="KeyboardInaccessibleWidget" />
+
+                    <!-- Spinner Tahun -->
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/spinnerYear"
+                        style="@style/DescriptionBoldTextStyle"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_spinner_base"
+                        android:minWidth="100dp"
+                        android:singleLine="true"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:dropDownHeight="200dp"
+                        tools:ignore="KeyboardInaccessibleWidget" />
+
+                </LinearLayout>
+
+
 
 
 
@@ -116,6 +142,7 @@
                     android:id="@+id/btnNextMonth"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:contentDescription="@string/more_detail"
                     android:padding="4dp"
                     android:src="@drawable/ic_arrow_right" />
             </LinearLayout>
