@@ -181,11 +181,12 @@ class HomeFragment : Fragment() {
                         context = requireContext(),
                         classId = s.classId,
                         sessionNumber = s.sessionNumber,
-                        title = s.courseName,
-                        room = s.roomId,
+                        className = s.courseName ?: "Class",
+                        room = s.roomId ?: "-",
                         startDate = dateLd,
                         startTime = start
                     )
+
 
                     val inWindow = if (start != null && end != null) {
                         val windowStart = start.minusMinutes(MINUTES_BEFORE_START.toLong())

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import com.example.herenow.data.AuthRepository
 import com.example.herenow.data.LoginResult
@@ -19,6 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -74,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
                         goMain()
                     }
                     is LoginResult.Failure -> {
-                        showCustomToast(result.message)
+                        showCustomToast("Invalid email or password")
                         // Kembalikan tombol ke keadaan semula
                         binding.btnLogin.apply {
                             isEnabled = true
