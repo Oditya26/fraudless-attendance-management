@@ -6,6 +6,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
@@ -57,7 +58,9 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import android.location.Location
 import android.provider.Settings
+import android.util.TypedValue
 import android.view.Gravity
+import android.widget.LinearLayout
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
@@ -1080,29 +1083,73 @@ class DetailFragment : Fragment() {
             LocalPresenceStore.set(requireContext(), presenceId, "face", isMatch)
             toastMatch("Face", isMatch)
 
-            AlertDialog.Builder(ctx)
-                .setTitle("Face Match")
-                .setMessage(
-                    buildString {
+            // --- Ganti blok AlertDialog lama dengan ini ---
+            val builder = AlertDialog.Builder(ctx, R.style.RoundedAlertDialog)
+            val container = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(40, 30, 40, 30)
+                gravity = Gravity.START
+            }
+
+// === Custom Title ===
+            val titleView = TextView(ctx).apply {
+                text = "Face Match Result"
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+                setTypeface(typeface, Typeface.BOLD)
+                setTextColor(ContextCompat.getColor(ctx, R.color.black))
+                setPadding(0, 0, 0, 16)
+                gravity = Gravity.START
+            }
+            container.addView(titleView)
+
+// === Message ===
+            val isSimilarityValid = similarity.contains("%") || similarity.any { it.isDigit() }
+
+            val resultText = if (!isSimilarityValid) {
+                "There is no face detected."
+            } else {
+                "Result: ${if (isMatch) "Match Face" else "Not Match Face"}"
+            }
+
+            val messageView = TextView(ctx).apply {
+                text = buildString {
+                    if (isSimilarityValid) {
                         append("StudentId: $apiStudentId\n")
                         append("Similarity: $similarity\n")
-                        append("Result: ${if (isMatch) "Match ✅" else "Not Match ❌"}")
                     }
-                )
-                .setPositiveButton("OK") { _, _ ->
+                    append(resultText)
+                }
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                setTextColor(ContextCompat.getColor(ctx, R.color.black))
+                setPadding(0, 0, 0, 8)
+                gravity = Gravity.START
+            }
+
+            container.addView(messageView)
+
+            builder.setView(container)
+
+            if (isMatch && isSimilarityValid) {
+                builder.setPositiveButton("Attendance") { _, _ ->
                     runIfViewActive {
-                        if (isMatch) {
-                            setWaitingUI("Syncing Attendance...")
-                            // TIGA LOKAL OK? Kirim PUT location & face
-                            finalizeIfAllLocalOk(selectedSession)
-                        } else {
-                            // === NEW
-                            resetFlowAndRestart(selectedSession)
-                            // === END NEW
-                        }
+                        setWaitingUI("Syncing Attendance...")
+                        finalizeIfAllLocalOk(selectedSession)
                     }
                 }
-                .show()
+            } else {
+                builder.setPositiveButton("Try Again") { _, _ ->
+                    runIfViewActive {
+                        resetFlowAndRestart(selectedSession)
+                    }
+                }
+            }
+
+            builder.setCancelable(true)
+            val dialog = builder.create()
+            dialog.show()
+            dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
+
+
         }
     }
 

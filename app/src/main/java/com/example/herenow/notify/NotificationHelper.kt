@@ -1,43 +1,47 @@
 package com.example.herenow.notify
 
-import android.Manifest
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.text.HtmlCompat
 import com.example.herenow.LoginActivity
 import com.example.herenow.R
 
 object NotificationHelper {
 
     private const val CHANNEL_ID = "class_reminder_channel"
+    private const val CHANNEL_NAME = "Class Reminders"
+    private const val CHANNEL_DESC = "Reminds you about upcoming classes"
 
+    // 🔹 Fungsi untuk memastikan channel notifikasi sudah dibuat (wajib di Android 8+)
     fun ensureChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Class Reminder",
+                CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Reminds you about upcoming classes"
+                description = CHANNEL_DESC
+                enableVibration(true)
+                enableLights(true)
             }
-            val manager = context.getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 
-    fun showSimpleNotification(
-        context: Context,
-        title: String,
-        message: String
-    ) {
+    // 🔹 Fungsi utama untuk menampilkan notifikasi expandable + intent ke LoginActivity
+    fun showExpandableNotification(context: Context, title: String, message: String) {
+        // Pastikan channel sudah dibuat
         ensureChannel(context)
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val intent = Intent(context, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -47,31 +51,26 @@ object NotificationHelper {
             context,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_teacher)
             .setContentTitle(title)
-            .setContentText(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY))
+            .setContentText("Tap to view more details")
             .setStyle(
                 NotificationCompat.BigTextStyle().bigText(
-                    HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY)
+                    android.text.Html.fromHtml(
+                        message,
+                        android.text.Html.FROM_HTML_MODE_LEGACY
+                    )
                 )
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
 
-        val notificationManager = NotificationManagerCompat.from(context)
-
-        // ✅ Cek izin POST_NOTIFICATIONS sebelum menampilkan notifikasi
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
-        } else {
-            Log.w("NotificationHelper", "Permission POST_NOTIFICATIONS not granted. Notification skipped.")
-        }
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 }

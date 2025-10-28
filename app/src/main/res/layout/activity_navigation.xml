@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -13,21 +12,113 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:defaultNavHost="true" />
+        android:layout_above="@id/bottom_nav_bar" />
 
-    <com.qamar.curvedbottomnaviagtion.CurvedBottomNavigation
-        android:id="@+id/curved_bottom_navigation"
+    <!-- Custom Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/bottom_nav_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="76dp"
         android:layout_alignParentBottom="true"
-        app:cbn_background="@color/rich_electric_blue"
-        app:cbn_fabColor="@color/yellow_orange"
-        app:cbn_iconColor="@color/ateneo_blue"
-        app:cbn_height="76dp"
-        app:cbn_icon_size="24dp"
-        app:cbn_curve_radius="26dp"
-        app:cbn_selected_icon_size="48dp"
-        app:cbn_selectedIconColor="@color/white"
-        app:cbn_titleColor="@color/ateneo_blue"/>
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/rich_electric_blue"
+        android:paddingHorizontal="8dp">
 
+        <LinearLayout
+            android:id="@+id/nav_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="6dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/icon_home"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_home" />
+
+            <TextView
+                android:id="@+id/text_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/home"
+                style="@style/DescriptionRegularTextStyle"
+                android:textColor="@color/ateneo_blue" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_schedule"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="6dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/icon_schedule"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_schedule" />
+
+            <TextView
+                android:id="@+id/text_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule"
+                style="@style/DescriptionRegularTextStyle"
+                android:textColor="@color/ateneo_blue" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_enrollment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="6dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/icon_enrollment"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_enrollment" />
+
+            <TextView
+                android:id="@+id/text_enrollment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/enrollment"
+                style="@style/DescriptionRegularTextStyle"
+                android:textColor="@color/ateneo_blue" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="6dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/icon_profile"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_profile" />
+
+            <TextView
+                android:id="@+id/text_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile"
+                style="@style/DescriptionRegularTextStyle"
+                android:textColor="@color/ateneo_blue" />
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

@@ -30,16 +30,19 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import com.example.herenow.data.local.PreferenceManager
 
 class HomeFragment : Fragment() {
 
     // Tampilkan kartu mulai X menit sebelum jam mulai hingga sebelum jam selesai
     private val MINUTES_BEFORE_START = 15
-
+    private lateinit var preferenceManager: PreferenceManager
     private lateinit var profileRepo: ProfileRepository
     private lateinit var sessionsRepo: SessionsByDateRepository
     private lateinit var tokenManager: TokenManager
     private val BASE_URL = "http://202.10.44.214:8000"
+
+    private var currentClassId: Int? = null
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -85,6 +88,12 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         profileRepo = ProfileRepository(requireContext())
         sessionsRepo = SessionsByDateRepository(requireContext())
+        preferenceManager = PreferenceManager(requireContext())
+
+        val savedStatus = preferenceManager.getAttendanceStatus()
+        if (savedStatus == "attended" || savedStatus == "waiting_verification") {
+            currentClassId?.let { ReminderScheduler.cancelReminder(requireContext(), it) }
+        }
 
         // Pastikan channel notifikasi siap
         NotificationHelper.ensureChannel(requireContext())
@@ -164,6 +173,7 @@ class HomeFragment : Fragment() {
             when (val result = sessionsRepo.fetchNow(todayStr)) {
                 is TodayNowResult.Success -> {
                     val s = result.session
+                    currentClassId = s.classId
                     val today = LocalDate.now()
 
                     // Validasi tanggal hari ini (robust)
@@ -177,15 +187,17 @@ class HomeFragment : Fragment() {
                     val end   = parseLocalTimeFlexible(s.shiftEnd)
                     val now   = LocalTime.now()
 
-                    ReminderScheduler.schedule15mBefore(
+                    ReminderScheduler.scheduleRepeatingReminder(
                         context = requireContext(),
                         classId = s.classId,
                         sessionNumber = s.sessionNumber,
                         className = s.courseName ?: "Class",
                         room = s.roomId ?: "-",
                         startDate = dateLd,
-                        startTime = start
+                        startTime = start,
+                        endTime = end
                     )
+
 
 
                     val inWindow = if (start != null && end != null) {
@@ -293,6 +305,7 @@ class HomeFragment : Fragment() {
                 ContextCompat.getColorStateList(requireContext(), R.color.yellow_orange)
             setOnClickListener { onClick() }
         }
+        preferenceManager.setAttendanceStatus("pending")
     }
 
     private fun setAttendedUI() {
@@ -304,6 +317,10 @@ class HomeFragment : Fragment() {
                 ContextCompat.getColorStateList(requireContext(), android.R.color.holo_green_dark)
             setOnClickListener(null)
         }
+        preferenceManager.setAttendanceStatus("attended")
+        currentClassId?.let {
+            ReminderScheduler.cancelReminder(requireContext(), it)
+        }
     }
 
     private fun setWaitingVerificationUI() {
@@ -314,6 +331,11 @@ class HomeFragment : Fragment() {
             backgroundTintList =
                 ContextCompat.getColorStateList(requireContext(), R.color.yellow_orange)
             setOnClickListener(null)
+        }
+        preferenceManager.setAttendanceStatus("waiting_verification")
+
+        currentClassId?.let {
+            ReminderScheduler.cancelReminder(requireContext(), it)
         }
     }
 

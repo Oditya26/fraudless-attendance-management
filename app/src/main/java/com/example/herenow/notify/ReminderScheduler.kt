@@ -6,29 +6,36 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 object ReminderScheduler {
 
     @SuppressLint("ScheduleExactAlarm")
     @RequiresApi(Build.VERSION_CODES.O)
-    fun schedule15mBefore(
+    fun scheduleRepeatingReminder(
         context: Context,
         classId: Int,
         sessionNumber: Int,
         className: String,
         room: String,
         startDate: LocalDate,
-        startTime: LocalTime?
+        startTime: LocalTime?,
+        endTime: LocalTime?
     ) {
-        if (startTime == null) return
+        if (startTime == null || endTime == null) return
 
-        val triggerTimeMillis = startDate
+        val zone = ZoneId.systemDefault()
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        // 🔹 Mulai 15 menit sebelum kelas
+        val startTriggerMillis = startDate
             .atTime(startTime.minusMinutes(15))
-            .atZone(ZoneId.systemDefault())
+            .atZone(zone)
             .toInstant()
             .toEpochMilli()
 
@@ -38,21 +45,44 @@ object ReminderScheduler {
             putExtra("className", className)
             putExtra("room", room)
             putExtra("startTime", startTime.toString())
-            putExtra("endTime", startTime.plusHours(2).toString()) // contoh default 2 jam
+            putExtra("endTime", endTime.toString())
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            classId, // unique per class
+            classId,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        // 🔹 Jadwalkan notifikasi pertama
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            triggerTimeMillis,
+            startTriggerMillis,
             pendingIntent
         )
+
+        Log.d("ReminderScheduler", "🔔 Reminder pertama dijadwalkan pada: ${startTime.minusMinutes(15)}")
+
+        // 🔹 Ulangi tiap 1 menit
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            startTriggerMillis,
+            60_000L, // 1 menit
+            pendingIntent
+        )
+    }
+
+    fun cancelReminder(context: Context, classId: Int) {
+        val intent = Intent(context, ReminderReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            classId,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+        Log.d("ReminderScheduler", "⏹️ Reminder dibatalkan untuk classId=$classId")
     }
 }
