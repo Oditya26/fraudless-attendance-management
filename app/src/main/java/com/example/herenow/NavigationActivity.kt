@@ -107,6 +107,10 @@ class NavigationActivity : AppCompatActivity() {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             setCustomAnimations(enterAnim, exitAnim)
+            supportFragmentManager.popBackStack(
+                null,
+                androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
             replace(R.id.nav_host_fragment, fragment, newTag)
         }
 
