@@ -1,11 +1,18 @@
 package com.example.herenow
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -31,6 +38,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import com.example.herenow.data.local.PreferenceManager
+import com.example.herenow.util.AlarmPermissionHelper
 
 class HomeFragment : Fragment() {
 
@@ -46,6 +54,25 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            com.example.herenow.notify.NotificationHelper.showExpandableNotification(
+                requireContext(),
+                "Notifications Enabled",
+                "You will now receive class reminders and updates."
+            )
+        } else {
+            com.example.herenow.notify.NotificationHelper.showExpandableNotification(
+                requireContext(),
+                "Notifications Disabled",
+                "You may miss important reminders unless you enable notifications."
+            )
+        }
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val dateFormatter: DateTimeFormatter =
@@ -90,6 +117,20 @@ class HomeFragment : Fragment() {
         sessionsRepo = SessionsByDateRepository(requireContext())
         preferenceManager = PreferenceManager(requireContext())
 
+        if (!areNotificationsEnabled()) {
+            showNotificationAccessDialog()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
         val savedStatus = preferenceManager.getAttendanceStatus()
         if (savedStatus == "attended" || savedStatus == "waiting_verification") {
             currentClassId?.let { ReminderScheduler.cancelReminder(requireContext(), it) }
@@ -103,12 +144,138 @@ class HomeFragment : Fragment() {
         refreshNowCardFromApi()
     }
 
+    private val pushNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            // Jika pengguna memberi izin
+            NotificationHelper.showExpandableNotification(
+                requireContext(),
+                "Notifications Enabled",
+                "You will now receive class reminders and updates."
+            )
+        } else {
+            // Jika pengguna menolak izin
+            NotificationHelper.showExpandableNotification(
+                requireContext(),
+                "Notifications Disabled",
+                "You may miss important reminders unless you enable notifications."
+            )
+        }
+    }
+
+    private fun areNotificationsEnabled(): Boolean {
+        val manager = androidx.core.content.ContextCompat.getSystemService(
+            requireContext(),
+            android.app.NotificationManager::class.java
+        )
+        return manager?.areNotificationsEnabled() ?: true
+    }
+
+    private fun checkNotificationPermissionManually() {
+        val notificationManager =
+            ContextCompat.getSystemService(requireContext(), android.app.NotificationManager::class.java)
+        val areEnabled = notificationManager?.areNotificationsEnabled() ?: true
+
+        if (!areEnabled) {
+            showNotificationAccessDialog()
+            return
+        }
+
+        // Untuk Android 13+, cek permission POST_NOTIFICATIONS juga
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val isGranted = ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!isGranted) {
+                showNotificationAccessDialog()
+            }
+        }
+    }
+
+
+    @SuppressLint("ObsoleteSdkInt")
+    private fun showNotificationAccessDialog() {
+        val context = requireContext()
+        val builder = androidx.appcompat.app.AlertDialog.Builder(context, R.style.RoundedAlertDialog)
+
+        // Container utama dialog
+        val container = android.widget.LinearLayout(context).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(24, 24, 24, 24)
+            gravity = android.view.Gravity.CENTER
+        }
+
+        // Pesan utama
+        val messageView = android.widget.TextView(context).apply {
+            text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                "This app needs permission to show notifications.\nPlease allow access so you can receive important reminders."
+            } else {
+                "Notifications are currently disabled.\nPlease enable them in settings to receive important reminders."
+            }
+            setTextAppearance(R.style.DescriptionBoldTextStyle)
+            setPadding(8, 8, 8, 8)
+            gravity = android.view.Gravity.CENTER
+        }
+
+        container.addView(messageView)
+        builder.setView(container)
+
+        // Tombol "Allow" → buka pengaturan notifikasi
+        builder.setPositiveButton("Allow") { _, _ ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // Untuk Android 13+, buka permission POST_NOTIFICATIONS
+                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                // Untuk Android 12 ke bawah, arahkan ke pengaturan notifikasi aplikasi
+                val intent = android.content.Intent().apply {
+                    action = android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, context.packageName)
+                }
+                startActivity(intent)
+            }
+        }
+
+        // Tombol "Cancel"
+        builder.setNegativeButton("Cancel", null)
+        builder.setCancelable(true)
+
+        val dialog = builder.create()
+        dialog.show()
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
+    }
+
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
         showNameSkeleton(true)
         loadAndSetUserName()
         refreshNowCardFromApi()
+        checkExactAlarmPermission()
+        checkNotificationPermissionManually()
+    }
+
+    private fun checkExactAlarmPermission() {
+        val context = requireContext()
+        if (!AlarmPermissionHelper.hasExactAlarmPermission(context)) {
+            // Show default notification as fallback
+            showDefaultNotification()
+
+            // Then prompt user to enable permission
+            AlarmPermissionHelper.showPermissionDialog(context)
+        }
+    }
+
+    private fun showDefaultNotification() {
+        com.example.herenow.notify.NotificationHelper.showExpandableNotification(
+            requireContext(),
+            "Reminder",
+            "The app doesn’t have permission to schedule exact alarms yet. Enable it for full functionality."
+        )
     }
 
     private fun loadAndSetUserName() {

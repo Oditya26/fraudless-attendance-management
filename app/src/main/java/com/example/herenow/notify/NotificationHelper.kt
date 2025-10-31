@@ -55,7 +55,7 @@ object NotificationHelper {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_teacher)
+            .setSmallIcon(R.drawable.icon_herenow)
             .setContentTitle(title)
             .setContentText("Tap to view more details")
             .setStyle(
